@@ -130,7 +130,7 @@
 
             <div class="broadcasts-container" id="broadcastsContainer">
                 <div class="featured-broadcast-card">
-                    <h2 class="broadcast-title" style="font-size:14px; text-align:center; color: var(--text-muted);">Connecting to Secure Node...</h2>
+                    <h2 class="broadcast-title" style="font-size:14px; text-align:center; color: var(--text-muted, #94a3b8);">Connecting to Secure Node...</h2>
                 </div>
             </div>
 
@@ -175,6 +175,23 @@
         </nav>
     </div>
 
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((reg) => {
+              console.log('Shiqela Service Worker active on scope:', reg.scope);
+            })
+            .catch((err) => {
+              console.error('Shiqela Service Worker registration error:', err);
+            });
+        });
+      }
+    </script>
+
+    <!-- Main JavaScript Logic -->
     <script type="module" src="index.js"></script>
 </body>
 </html>
