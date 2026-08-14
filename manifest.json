@@ -1,10 +1,16 @@
 {
-  "short_name": "App",
-  "name": "My Web Application",
+  "short_name": "Shiqela",
+  "name": "Shiqela App",
   "icons": [
     {
-      "src": "s.png",
-      "sizes": "192x192 512x512",
+      "src": "/s.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/s.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
