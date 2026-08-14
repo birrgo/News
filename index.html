@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Shikela - Home & Latest Index</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="news.css">
+</head>
+<body>
+
+    <div class="app-view">
+        <svg class="bg-wave bg-wave-top" viewBox="0 0 375 200" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0H375V75C375 75 280 155 0 95V0Z" fill="url(#paint0_linear)"/>
+            <defs>
+                <linearGradient id="paint0_linear" x1="187.5" y1="0" x2="187.5" y2="200" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#081B38"/>
+                    <stop offset="1" stop-color="#0F2C59"/>
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <div class="custom-popup-overlay" id="customPopupModule">
+            <div class="custom-popup-modal">
+                <span class="popup-status-icon" id="popupIconNode">ℹ️</span>
+                <h3 class="popup-main-title" id="popupTitleNode">Status Alert</h3>
+                <p class="popup-body-desc" id="popupDescNode">Notification update context.</p>
+                <button class="popup-dismiss-action" id="closePopupBtn">Continue</button>
+            </div>
+        </div>
+
+        <div class="full-news-modal-overlay" id="fullNewsModalOverlay">
+            <div class="news-reader-header">
+                <h2 style="font-size: 15px; font-weight: 800;">Full Article Details</h2>
+                <button class="close-reader-btn" id="closeNewsReaderBtn" aria-label="Close Reader">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="news-reader-content" id="fullNewsReaderBody"></div>
+        </div>
+
+        <div class="search-modal-overlay" id="searchModalOverlay">
+            <div class="search-box-header">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-news-field" id="newsCodeSearchInput" placeholder="Enter Post Code..." autocomplete="off">
+                </div>
+                <button class="close-search-btn" id="closeSearchDrawerBtn">Cancel</button>
+            </div>
+            <div class="search-results-area" id="searchResultsArea">
+                <div style="text-align:center; padding:30px 20px; color:#ffffff; font-size:13px; font-weight:600;">
+                    Type a post code above to find updates quickly.
+                </div>
+            </div>
+        </div>
+
+        <header class="nav-header">
+            <div class="header-left-group">
+                <h1 class="header-title-text">What's new?</h1>
+            </div>
+            
+            <div class="header-live-clock-badge" id="topCornerLiveClock">00:00:00 AM</div>
+
+            <button class="search-action-btn" id="openSearchBtn" aria-label="Search News">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+        </header>
+
+        <main class="app-content">
+            <!-- Two-Choice Top Menu with Shikela Update and Shikela Tips -->
+            <div class="category-filter-row filter-btn-grid" id="filterPillsRow">
+                <button class="filter-pill filter-btn active-pill active" data-filter="Shikela Update" data-category="Shikela Update">Shikela Update</button>
+                <button class="filter-pill filter-btn" data-filter="Shikela Tips" data-category="Shikela Tips">Shikela Tips</button>
+            </div>
+
+            <div class="broadcasts-container" id="broadcastsContainer">
+                <div class="featured-broadcast-card">
+                    <h2 class="broadcast-title" style="font-size:14px; text-align:center; color: var(--text-muted);">Connecting to Secure Node...</h2>
+                </div>
+            </div>
+
+            <footer class="verified-footer-shield">
+                <span class="footer-shield-text">Shikela Secure Matrix Verified</span>
+            </footer>
+        </main>
+
+        <!-- Bottom Navigation Menu -->
+        <nav class="bottom-nav">
+            <!-- 1. Home (Active for index.html) -->
+            <a id="nav-home" href="index.html" class="nav-item active">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <span>Home</span>
+            </a>
+
+            <!-- 2. Online Jobs -->
+            <a id="nav-jobs" href="s.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <span>Online Jobs</span>
+            </a>
+
+            <!-- 3. Tech -->
+            <a id="nav-tech" href="in.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <span>Tech</span>
+            </a>
+
+            <!-- 4. Social Media -->
+            <a id="nav-social" href="sm.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </div>
+                <span>Social Media</span>
+            </a>
+        </nav>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>

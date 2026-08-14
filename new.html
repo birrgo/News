@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Shikela - Central App Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-dark-blue: #0f172a;
+            --primary-gradient: linear-gradient(135deg, #090d16 0%, #1e293b 50%, #0f172a 100%);
+            --accent-glow: rgba(30, 41, 59, 0.15);
+            --text-dark: #090d16;
+            --text-muted: #475569;
+            --bg-light: #f8fafc;
+            --border-light: #cbd5e1;
+            --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+            --error-red: #ef4444;
+            --success-green: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: -0.2px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            background-image: radial-gradient(rgba(30, 41, 59, 0.12) 1px, transparent 1px);
+            background-size: 20px 20px;
+            padding: 24px 16px;
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid var(--border-light);
+            padding: 32px 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .brand-logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-dark-blue);
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .user-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--accent-glow);
+            color: var(--primary-dark-blue);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+
+        .login-box, .pin-manage-box {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .field-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-block label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .pin-input, .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-light);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .pin-input {
+            font-size: 16px;
+            letter-spacing: 4px;
+            text-align: center;
+        }
+
+        .pin-input:focus, .text-input:focus {
+            border-color: var(--primary-dark-blue);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            font-size: 12.5px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-message.error {
+            color: var(--error-red);
+        }
+
+        .status-message.success {
+            color: var(--success-green);
+        }
+
+        .portal-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-dark-blue);
+            box-shadow: 0 12px 20px -4px var(--accent-glow);
+        }
+
+        .card-icon-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 14px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .btn-launch {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 800;
+            background: var(--bg-light);
+            color: var(--primary-dark-blue);
+            border: 1px solid var(--border-light);
+        }
+
+        .portal-card:hover .btn-launch {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            border-color: transparent;
+        }
+
+        .settings-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .settings-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header-brand">
+            <img class="brand-logo-img" src="shikela-logo.png" alt="Shikela Logo" onerror="this.style.display='none'">
+            <div>
+                <h1 class="header-title">Shikela Portal</h1>
+                <p class="header-subtitle" id="headerSubtitle">Enter credentials to authenticate access</p>
+                <div id="userBadge" class="user-badge hidden"></div>
+            </div>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginSection" class="login-box">
+            <div class="input-group">
+                <div class="field-block">
+                    <label for="loginUsernameInput">User Name</label>
+                    <input type="text" id="loginUsernameInput" class="text-input" placeholder="Enter User Name" autocomplete="off">
+                </div>
+                <div class="field-block">
+                    <label for="loginPinInput">Security PIN</label>
+                    <input type="password" id="loginPinInput" class="pin-input" maxlength="8" placeholder="••••" autocomplete="off">
+                </div>
+            </div>
+            <p id="errorMessage" class="status-message error">Incorrect Username or PIN.</p>
+            <button type="button" id="unlockBtn" class="btn-submit" onclick="verifyCredentials()">Unlock Portal</button>
+        </div>
+
+        <!-- PORTAL CONTENT -->
+        <div id="portalSection" class="hidden">
+            <a href="adminnews.html" class="portal-card">
+                <div>
+                    <div class="card-icon-badge">📰</div>
+                    <h2 class="card-title">Admin News Feed</h2>
+                    <p class="card-desc">Centralized feed dashboard to overview all combined system posts.</p>
+                </div>
+                <div class="btn-launch">
+                    <span>Open adminnews.html</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <div class="settings-card">
+                <div class="settings-title">⚙️ Manage Credentials</div>
+                <div class="pin-manage-box">
+                    <div class="input-group">
+                        <div class="field-block">
+                            <label>New User Name</label>
+                            <input type="text" id="settingsUsernameInput" class="text-input" placeholder="Enter User Name">
+                        </div>
+                        <div class="field-block">
+                            <label>PIN Settings</label>
+                            <input type="password" id="currentPinInput" class="pin-input" maxlength="8" placeholder="Current PIN">
+                            <input type="password" id="newPinInput" class="pin-input" maxlength="8" placeholder="New PIN">
+                            <input type="password" id="confirmPinInput" class="pin-input" maxlength="8" placeholder="Confirm New PIN">
+                        </div>
+                    </div>
+                    <p id="manageStatusMessage" class="status-message"></p>
+                    <button type="button" id="updatePinBtn" class="btn-submit" onclick="changePinInDB()">Update Credentials in Database</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FIREBASE INITIALIZATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqwgwiukwKb7o6gwnaLoPQSWc7BfMDuYQ",
+            authDomain: "besuad.firebaseapp.com",
+            databaseURL: "https://besuad-default-rtdb.firebaseio.com",
+            projectId: "besuad",
+            storageBucket: "besuad.firebasestorage.app",
+            messagingSenderId: "641705823615",
+            appId: "1:641705823615:web:6502b2511ff8c0f251de4a",
+            measurementId: "G-2YSX71N08Q"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const DEFAULT_PIN = "1234";
+        const DEFAULT_USER = "Shikela Admin";
+
+        async function verifyCredentials() {
+            const usernameInput = document.getElementById("loginUsernameInput").value.trim();
+            const pinInput = document.getElementById("loginPinInput").value.trim();
+            const errorMsg = document.getElementById("errorMessage");
+            const unlockBtn = document.getElementById("unlockBtn");
+
+            if (!usernameInput || !pinInput) {
+                errorMsg.innerText = "Please enter both User Name and Security PIN.";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            unlockBtn.disabled = true;
+            unlockBtn.innerText = "Authenticating...";
+
+            try {
+                // Fetch PIN and Username from Firebase
+                const pinSnap = await db.ref('adminPin').once('value');
+                const userSnap = await db.ref('adminUsername').once('value');
+
+                let dbPin = pinSnap.val();
+                let dbUser = userSnap.val();
+
+                // Initialize defaults in database if node doesn't exist yet
+                if (!dbPin) {
+                    dbPin = DEFAULT_PIN;
+                    await db.ref('adminPin').set(DEFAULT_PIN);
+                }
+                if (!dbUser) {
+                    dbUser = DEFAULT_USER;
+                    await db.ref('adminUsername').set(DEFAULT_USER);
+                }
+
+                // Verify username and PIN against Firebase
+                if (usernameInput.toLowerCase() === dbUser.toLowerCase() && pinInput === dbPin.toString()) {
+                    errorMsg.style.display = "none";
+                    document.getElementById("loginSection").classList.add("hidden");
+                    document.getElementById("portalSection").classList.remove("hidden");
+                    
+                    document.getElementById("headerSubtitle").innerText = "Select module or manage portal settings";
+                    
+                    // Display user badge
+                    const userBadge = document.getElementById("userBadge");
+                    userBadge.innerText = `👤 Logged in: ${dbUser}`;
+                    userBadge.classList.remove("hidden");
+
+                    // Fill user field in settings card
+                    document.getElementById("settingsUsernameInput").value = dbUser;
+                } else {
+                    errorMsg.innerText = "Incorrect User Name or Security PIN.";
+                    errorMsg.style.display = "block";
+                    document.getElementById("loginPinInput").value = "";
+                    document.getElementById("loginPinInput").focus();
+                }
+            } catch (err) {
+                console.error("Firebase Read Error:", err);
+                errorMsg.innerText = "Error connecting to Firebase Database.";
+                errorMsg.style.display = "block";
+            } finally {
+                unlockBtn.disabled = false;
+                unlockBtn.innerText = "Unlock Portal";
+            }
+        }
+
+        async function changePinInDB() {
+            const userName = document.getElementById("settingsUsernameInput").value.trim();
+            const currentPin = document.getElementById("currentPinInput").value.trim();
+            const newPin = document.getElementById("newPinInput").value.trim();
+            const confirmPin = document.getElementById("confirmPinInput").value.trim();
+            const updateBtn = document.getElementById("updatePinBtn");
+
+            if (!userName) {
+                showStatus("Please enter a User Name.", "error");
+                return;
+            }
+
+            if (!currentPin || !newPin || !confirmPin) {
+                showStatus("Please fill in all PIN fields.", "error");
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showStatus("New PINs do not match!", "error");
+                return;
+            }
+
+            if (newPin.length < 4) {
+                showStatus("New PIN must be at least 4 digits.", "error");
+                return;
+            }
+
+            updateBtn.disabled = true;
+            updateBtn.innerText = "Updating...";
+
+            try {
+                const snapshot = await db.ref('adminPin').once('value');
+                let dbPin = snapshot.val() || DEFAULT_PIN;
+
+                if (currentPin !== dbPin.toString()) {
+                    showStatus("Current PIN is incorrect.", "error");
+                } else {
+                    // Update Database
+                    await db.ref('adminPin').set(newPin);
+                    await db.ref('adminUsername').set(userName);
+
+                    // Update UI Header
+                    document.getElementById("userBadge").innerText = `👤 Logged in: ${userName}`;
+
+                    showStatus("Credentials successfully updated in database!", "success");
+                    document.getElementById("currentPinInput").value = "";
+                    document.getElementById("newPinInput").value = "";
+                    document.getElementById("confirmPinInput").value = "";
+                }
+            } catch (err) {
+                console.error("Firebase Write Error:", err);
+                showStatus("Failed to update database.", "error");
+            } finally {
+                updateBtn.disabled = false;
+                updateBtn.innerText = "Update Credentials in Database";
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusMsg = document.getElementById("manageStatusMessage");
+            statusMsg.innerText = message;
+            statusMsg.className = `status-message ${type}`;
+            statusMsg.style.display = "block";
+        }
+
+        document.getElementById("loginPinInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") verifyCredentials();
+        });
+        document.getElementById("loginUsernameInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") document.getElementById("loginPinInput").focus();
+        });
+    </script>
+</body>
+</html>

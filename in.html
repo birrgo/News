@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tech Hub - Updates & Tips</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="news.css">
+</head>
+<body>
+
+    <div class="app-view">
+        <svg class="bg-wave bg-wave-top" viewBox="0 0 375 200" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0H375V75C375 75 280 155 0 95V0Z" fill="url(#paint0_linear)"/>
+            <defs>
+                <linearGradient id="paint0_linear" x1="187.5" y1="0" x2="187.5" y2="200" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#4a0012"/>
+                    <stop offset="1" stop-color="#800020"/>
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <div class="full-news-modal-overlay" id="fullNewsModalOverlay">
+            <div class="news-reader-header">
+                <h2>Full Article Details</h2>
+                <button class="close-reader-btn" id="closeNewsReaderBtn" aria-label="Close Reader">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="news-reader-content" id="fullNewsReaderBody"></div>
+        </div>
+
+        <div class="search-modal-overlay" id="searchModalOverlay">
+            <div class="search-box-header">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-news-field" id="newsCodeSearchInput" placeholder="Search by topic or code..." autocomplete="off">
+                </div>
+                <button class="close-search-btn" id="closeSearchDrawerBtn">Cancel</button>
+            </div>
+            <div class="search-results-area" id="searchResultsArea">
+                <div class="search-empty-state">
+                    Type a query or code above to find updates quickly.
+                </div>
+            </div>
+        </div>
+
+        <header class="nav-header">
+            <div class="header-left-group">
+                <h1 class="header-title-text">Tech Hub</h1>
+            </div>
+            
+            <div class="header-live-clock-badge" id="topCornerLiveClock">00:00:00 AM</div>
+
+            <button class="search-action-btn" id="openSearchBtn" aria-label="Search News">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+        </header>
+
+        <main class="app-content">
+            <div class="category-filter-row" id="filterPillsRow">
+                <span class="filter-pill active-pill" data-category="Tech Update">Tech Update</span>
+                <span class="filter-pill" data-category="Tech Tips">Tech Tips</span>
+            </div>
+
+            <div class="broadcasts-container" id="broadcastsContainer">
+                <div class="featured-broadcast-card">
+                    <h2 class="broadcast-title broadcast-connecting-text">Connecting to Secure Node...</h2>
+                </div>
+            </div>
+
+            <footer class="verified-footer-shield">
+                <span class="footer-shield-text">Secure Matrix Verified</span>
+            </footer>
+        </main>
+
+        <!-- Integrated Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <!-- 1. Home -->
+            <a id="nav-home" href="index.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <span>Home</span>
+            </a>
+
+            <!-- 2. Online Jobs -->
+            <a id="nav-jobs" href="s.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <span>Online Jobs</span>
+            </a>
+
+            <!-- 3. Tech (Active Page) -->
+            <a id="nav-tech" href="in.html" class="nav-item active">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <span>Tech</span>
+            </a>
+
+            <!-- 4. Social Media -->
+            <a id="nav-social" href="sm.html" class="nav-item">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </div>
+                <span>Social Media</span>
+            </a>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqwgwiukwKb7o6gwnaLoPQSWc7BfMDuYQ",
+            authDomain: "besuad.firebaseapp.com",
+            databaseURL: "https://besuad-default-rtdb.firebaseio.com",
+            projectId: "besuad",
+            storageBucket: "besuad.firebasestorage.app",
+            messagingSenderId: "641705823615",
+            appId: "1:641705823615:web:6502b2511ff8c0f251de4a",
+            measurementId: "G-2YSX71N08Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        let localCachedBroadcasts = [];
+        let currentActiveCategoryFilter = "Tech Update";
+        let cardClockIntervalId = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAdminMode = urlParams.get('admin') === 'true';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            streamLiveAdminUpdatesLog();
+            bindVisualInterfaceControls();
+            setupSearchEngineControls();
+            setupNewsReaderModalControls();
+            initiateLiveInterfaceClocks();
+        });
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+        }
+
+        function initiateLiveInterfaceClocks() {
+            const cornerClockNode = document.getElementById('topCornerLiveClock');
+            
+            if (cardClockIntervalId) clearInterval(cardClockIntervalId);
+            cardClockIntervalId = setInterval(() => {
+                const now = new Date();
+                
+                if (cornerClockNode) {
+                    cornerClockNode.innerText = now.toLocaleTimeString(undefined, {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                    });
+                }
+
+                const clockNodes = document.querySelectorAll('.timestamp-log-text[data-timestamp]');
+                clockNodes.forEach(node => {
+                    const rawTime = parseInt(node.getAttribute('data-timestamp'));
+                    if (rawTime && !isNaN(rawTime)) {
+                        node.innerText = formatExactTimestampWithSeconds(rawTime);
+                    }
+                });
+            }, 1000);
+        }
+
+        function formatExactTimestampWithSeconds(baseEpoch) {
+            const dateObj = new Date(baseEpoch);
+            if (isNaN(dateObj.getTime())) return "Recent";
+            return dateObj.toLocaleDateString(undefined, { 
+                month: 'short', day: 'numeric', year: 'numeric' 
+            }) + ' • ' + dateObj.toLocaleTimeString(undefined, { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+        }
+
+        function streamLiveAdminUpdatesLog() {
+            const shikelaNewsRef = ref(db, `shikelaNews`);
+            
+            onValue(shikelaNewsRef, (snapshot) => {
+                localCachedBroadcasts = [];
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    Object.keys(data).forEach(key => {
+                        localCachedBroadcasts.push({ id: key, ...data[key] });
+                    });
+                    
+                    localCachedBroadcasts.sort((a, b) => {
+                        let timeA = a.updatedAt || a.createdAtTimestamp || a.timestamp || 0;
+                        let timeB = b.updatedAt || b.createdAtTimestamp || b.timestamp || 0;
+                        
+                        if (!timeA && a.date) timeA = new Date(a.date).getTime() || 0;
+                        if (!timeB && b.date) timeB = new Date(b.date).getTime() || 0;
+
+                        if (timeA !== 0 || timeB !== 0) return timeB - timeA;
+                        return b.id.localeCompare(a.id);
+                    });
+
+                    renderFilteredBroadcasts();
+                } else {
+                    renderEmptyState();
+                }
+            }, (error) => {
+                console.error("Database Core Error:", error);
+                const container = document.getElementById('broadcastsContainer');
+                if(container) container.innerHTML = '<p class="error-log-text">Synchronization Halted</p>';
+            });
+        }
+
+        function renderEmptyState() {
+            const container = document.getElementById('broadcastsContainer');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <article class="featured-broadcast-card">
+                    <div class="badge-meta-row"><span class="spotlight-pill">System OK</span></div>
+                    <h2 class="broadcast-title">All Systems Nominal</h2>
+                    <p class="broadcast-body-text">There are no updates or tips posted under this category today.</p>
+                </article>
+            `;
+        }
+
+        window.duplicateAsAdmin = async function(itemId) {
+            const sourceItem = localCachedBroadcasts.find(n => n.id === itemId);
+            if (!sourceItem) {
+                alert("Target article to duplicate was not found.");
+                return;
+            }
+
+            try {
+                const clonedPayload = { ...sourceItem };
+                delete clonedPayload.id;
+
+                const now = Date.now();
+                clonedPayload.createdAtTimestamp = now;
+                clonedPayload.updatedAt = now;
+                clonedPayload.timestamp = now;
+                
+                const titleVal = clonedPayload.title || clonedPayload.newsTitle || "Update";
+                clonedPayload.title = `${titleVal} (Copy)`;
+
+                if (clonedPayload.newsCode || clonedPayload.code) {
+                    const codeVal = clonedPayload.newsCode || clonedPayload.code;
+                    clonedPayload.newsCode = `${codeVal}_COPY`;
+                    clonedPayload.code = `${codeVal}_COPY`;
+                }
+
+                const shikelaNewsRef = ref(db, `shikelaNews`);
+                const newRef = push(shikelaNewsRef);
+                await set(newRef, clonedPayload);
+
+                alert("Successfully duplicated item into shikelaNews.");
+            } catch (err) {
+                console.error("Duplication failed:", err);
+                alert("Failed to duplicate article into database.");
+            }
+        };
+
+        function buildSingleNewsCardHTML(item) {
+            const headline = item.title || item.newsTitle || "Platform Announcement";
+            const fullContent = item.content || item.message || "";
+            const category = item.category || "Tech Update";
+            const imageUrl = item.imageUrl || item.image || "";
+
+            const maxPreviewLen = 120;
+            const isLongText = fullContent.length > maxPreviewLen;
+            const previewContent = isLongText ? fullContent.substring(0, maxPreviewLen).trim() + "..." : fullContent;
+
+            let numericalTime = item.updatedAt || item.createdAtTimestamp || item.timestamp;
+
+            if (!numericalTime && item.date) {
+                const parsed = new Date(item.date).getTime();
+                if (!isNaN(parsed)) numericalTime = parsed;
+            }
+
+            if (!numericalTime) numericalTime = Date.now(); 
+
+            const initialFormattedClock = formatExactTimestampWithSeconds(numericalTime);
+            const pillBadgeClass = "spotlight-pill";
+
+            let imageHTML = "";
+            if (imageUrl && imageUrl.trim().length > 0) {
+                imageHTML = `<div class="broadcast-image-frame" onclick="openFullNewsReader('${item.id}')"><img src="${imageUrl}" onload="this.classList.add('loaded')"></div>`;
+            }
+
+            let adminBtnHTML = "";
+            if (isAdminMode) {
+                adminBtnHTML = `
+                    <div class="admin-action-row">
+                        <button class="admin-duplicate-btn" onclick="duplicateAsAdmin('${item.id}')">📋 Duplicate Post</button>
+                    </div>
+                `;
+            }
+
+            return `
+                ${adminBtnHTML}
+                <div class="badge-meta-row">
+                    <div class="badge-meta-group">
+                        <span class="${pillBadgeClass}">${category}</span>
+                    </div>
+                    <span class="timestamp-log-text" data-timestamp="${numericalTime}">${initialFormattedClock}</span>
+                </div>
+                ${imageHTML}
+                <div class="clickable-news-content" onclick="openFullNewsReader('${item.id}')">
+                    <h2 class="broadcast-title">${headline}</h2>
+                    <p class="broadcast-body-text">${previewContent}</p>
+                </div>
+            `;
+        }
+
+        window.openFullNewsReader = function(itemId) {
+            const item = localCachedBroadcasts.find(n => n.id === itemId);
+            if (!item) return;
+
+            const readerOverlay = document.getElementById('fullNewsModalOverlay');
+            const readerBody = document.getElementById('fullNewsReaderBody');
+
+            if (!readerOverlay || !readerBody) return;
+
+            const headline = item.title || item.newsTitle || "Platform Announcement";
+            const fullContent = item.content || item.message || "";
+            const category = item.category || "Tech Update";
+            const imageUrl = item.imageUrl || item.image || "";
+            const videoUrl = item.videoUrl || item.youtubeUrl || "";
+            
+            const rawDupVal = item.duplicateCoverInArticle || item.duplicateImageInArticle || item.duplicateImage;
+            const duplicateCoverInArticle = rawDupVal === true || rawDupVal === "true" || rawDupVal === 1 || rawDupVal === "1";
+            
+            const targetRedirectUrl = item.link || item.redirectUrl || "";
+            const customActionLabel = item.buttonLabel || item.actionButtonLabel || "Visit External Source / Link";
+
+            let numericalTime = item.updatedAt || item.createdAtTimestamp || item.timestamp;
+            if (!numericalTime && item.date) {
+                const parsed = new Date(item.date).getTime();
+                if (!isNaN(parsed)) numericalTime = parsed;
+            }
+            if (!numericalTime) numericalTime = Date.now();
+
+            const initialFormattedClock = formatExactTimestampWithSeconds(numericalTime);
+            const pillBadgeClass = "spotlight-pill";
+
+            let imageHTML = "";
+            if (imageUrl && imageUrl.trim().length > 0 && duplicateCoverInArticle) {
+                imageHTML = `<div class="reader-image-frame"><img src="${imageUrl.trim()}" alt="${headline}"></div>`;
+            }
+
+            let videoHTML = "";
+            const embedUrl = getYouTubeEmbedUrl(videoUrl);
+            if (embedUrl) {
+                videoHTML = `
+                    <div class="reader-video-container">
+                        <iframe src="${embedUrl}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                    </div>
+                `;
+            }
+
+            let redirectBtnHTML = "";
+            if (targetRedirectUrl && targetRedirectUrl.trim().length > 0) {
+                redirectBtnHTML = `
+                    <div class="reader-redirect-wrapper">
+                        <a href="${targetRedirectUrl.trim()}" target="_blank" rel="noopener noreferrer" class="redirect-link-btn">
+                            <span>${customActionLabel}</span>
+                            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                `;
+            }
+
+            let adminDuplicateBtnReader = "";
+            if (isAdminMode) {
+                adminDuplicateBtnReader = `
+                    <button class="admin-duplicate-btn admin-duplicate-btn-full" onclick="duplicateAsAdmin('${item.id}')">📋 Duplicate Article Entry</button>
+                `;
+            }
+
+            readerBody.innerHTML = `
+                ${adminDuplicateBtnReader}
+                <div class="reader-meta-bar">
+                    <div class="badge-meta-group">
+                        <span class="${pillBadgeClass}">${category}</span>
+                    </div>
+                    <span class="timestamp-log-text">${initialFormattedClock}</span>
+                </div>
+                <h1 class="reader-title">${headline}</h1>
+                ${imageHTML}
+                ${videoHTML}
+                <div class="reader-full-body">${fullContent}</div>
+                ${redirectBtnHTML}
+            `;
+
+            readerOverlay.classList.add('active-reader');
+        };
+
+        function setupNewsReaderModalControls() {
+            const closeBtn = document.getElementById('closeNewsReaderBtn');
+            const readerOverlay = document.getElementById('fullNewsModalOverlay');
+
+            if (closeBtn && readerOverlay) {
+                closeBtn.addEventListener('click', () => {
+                    readerOverlay.classList.remove('active-reader');
+                });
+            }
+        }
+
+        function renderFilteredBroadcasts() {
+            const container = document.getElementById('broadcastsContainer');
+            if (!container) return;
+            
+            container.innerHTML = "";
+
+            const filtered = localCachedBroadcasts.filter(item => {
+                const nodeCategory = (item.category || "Tech Update").trim();
+                return nodeCategory.toLowerCase() === currentActiveCategoryFilter.trim().toLowerCase();
+            });
+
+            if (filtered.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            filtered.forEach((item) => {
+                const card = document.createElement('article');
+                card.className = "featured-broadcast-card";
+                card.innerHTML = buildSingleNewsCardHTML(item);
+                container.appendChild(card);
+            });
+        }
+
+        function bindVisualInterfaceControls() {
+            const pills = document.querySelectorAll('.filter-pill');
+            pills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    pills.forEach(p => p.classList.remove('active-pill'));
+                    this.classList.add('active-pill');
+                    currentActiveCategoryFilter = this.getAttribute('data-category') || this.innerText.trim();
+                    
+                    renderFilteredBroadcasts();
+                });
+            });
+        }
+
+        function setupSearchEngineControls() {
+            const openBtn = document.getElementById('openSearchBtn');
+            const closeBtn = document.getElementById('closeSearchDrawerBtn');
+            const searchOverlay = document.getElementById('searchModalOverlay');
+            const searchInput = document.getElementById('newsCodeSearchInput');
+
+            if (openBtn && searchOverlay) {
+                openBtn.addEventListener('click', () => {
+                    searchOverlay.classList.add('active-search');
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                    executeNewsSearchQuery('');
+                });
+            }
+
+            if (closeBtn && searchOverlay) {
+                closeBtn.addEventListener('click', () => {
+                    searchOverlay.classList.remove('active-search');
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    executeNewsSearchQuery(e.target.value);
+                });
+            }
+        }
+
+        function executeNewsSearchQuery(query) {
+            const resultsArea = document.getElementById('searchResultsArea');
+            if (!resultsArea) return;
+
+            const cleanQuery = query.trim().toLowerCase();
+
+            if (!cleanQuery) {
+                resultsArea.innerHTML = `
+                    <div class="search-empty-state">
+                        Type a query or code above to find updates quickly.
+                    </div>
+                `;
+                return;
+            }
+
+            const matchedNews = localCachedBroadcasts.filter(item => {
+                const code = String(item.newsCode || item.code || item.id || '').toLowerCase();
+                const title = String(item.title || item.newsTitle || '').toLowerCase();
+                const content = String(item.content || item.message || '').toLowerCase();
+
+                return code.includes(cleanQuery) || title.includes(cleanQuery) || content.includes(cleanQuery);
+            });
+
+            if (matchedNews.length === 0) {
+                resultsArea.innerHTML = `
+                    <div class="search-empty-state">
+                        No updates matching "<strong>${cleanQuery}</strong>" found.
+                    </div>
+                `;
+                return;
+            }
+
+            resultsArea.innerHTML = '';
+            matchedNews.forEach((item) => {
+                const card = document.createElement('article');
+                card.className = "featured-broadcast-card";
+                card.innerHTML = buildSingleNewsCardHTML(item);
+                resultsArea.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
