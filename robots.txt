@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Direct link to your sitemap
+Sitemap: https://shiqela.online/sitemap.xml
