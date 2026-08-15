@@ -165,19 +165,11 @@
             transform: none;
         }
 
-        .status-message {
-            font-size: 12.5px;
-            font-weight: 600;
-            text-align: center;
-            display: none;
-        }
-        
-        .status-message.error {
-            color: var(--error-red);
-        }
-
-        .status-message.success {
-            color: var(--success-green);
+        .portal-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .portal-card {
@@ -193,7 +185,6 @@
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
-            margin-bottom: 24px;
         }
 
         .portal-card:hover {
@@ -270,6 +261,91 @@
         .hidden {
             display: none !important;
         }
+
+        /* UI Popups Modal Styles */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .custom-modal.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalSlide 0.25s ease-out;
+            color: #f8fafc;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .status-content {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .status-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .status-icon.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-icon.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .status-message {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-btn {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .modal-btn:hover { background: #2563eb; }
     </style>
 </head>
 <body>
@@ -296,23 +372,38 @@
                     <input type="password" id="loginPinInput" class="pin-input" maxlength="8" placeholder="••••" autocomplete="off">
                 </div>
             </div>
-            <p id="errorMessage" class="status-message error">Incorrect Username or PIN.</p>
             <button type="button" id="unlockBtn" class="btn-submit" onclick="verifyCredentials()">Unlock Portal</button>
         </div>
 
         <!-- PORTAL CONTENT -->
         <div id="portalSection" class="hidden">
-            <a href="adminnews.html" class="portal-card">
-                <div>
-                    <div class="card-icon-badge">📰</div>
-                    <h2 class="card-title">Admin News Feed</h2>
-                    <p class="card-desc">Centralized feed dashboard to overview all combined system posts.</p>
-                </div>
-                <div class="btn-launch">
-                    <span>Open adminnews.html</span>
-                    <span>→</span>
-                </div>
-            </a>
+            <div class="portal-grid">
+                <!-- 1. Post Button Card -->
+                <a href="adminnews.html#post" class="portal-card">
+                    <div>
+                        <div class="card-icon-badge">📝</div>
+                        <h2 class="card-title">Publish Daily Post</h2>
+                        <p class="card-desc">Create and publish job listings, tech updates, and tips to the live app feed.</p>
+                    </div>
+                    <div class="btn-launch">
+                        <span>Open Post Console</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <!-- 2. Contacts Button Card -->
+                <a href="contacts.html#contacts" class="portal-card">
+                    <div>
+                        <div class="card-icon-badge">💬</div>
+                        <h2 class="card-title">Contact Messages & Links</h2>
+                        <p class="card-desc">Manage support channels and view inquiries submitted by users.</p>
+                    </div>
+                    <div class="btn-launch">
+                        <span>Open Contacts Console</span>
+                        <span>→</span>
+                    </div>
+                </a>
+            </div>
 
             <div class="settings-card">
                 <div class="settings-title">⚙️ Manage Credentials</div>
@@ -329,9 +420,20 @@
                             <input type="password" id="confirmPinInput" class="pin-input" maxlength="8" placeholder="Confirm New PIN">
                         </div>
                     </div>
-                    <p id="manageStatusMessage" class="status-message"></p>
                     <button type="button" id="updatePinBtn" class="btn-submit" onclick="changePinInDB()">Update Credentials in Database</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Status Popup Modal -->
+    <div id="statusModal" class="custom-modal">
+        <div class="modal-card">
+            <div class="status-content">
+                <div id="statusIcon" class="status-icon"></div>
+                <h3 id="statusTitle" class="modal-title">Notification</h3>
+                <div id="statusMessage" class="status-message"></div>
+                <button type="button" id="closeStatusBtn" class="modal-btn">Continue</button>
             </div>
         </div>
     </div>
@@ -354,15 +456,39 @@
         const DEFAULT_PIN = "1234";
         const DEFAULT_USER = "Shikela Admin";
 
+        // UI Popup Modal Controller
+        const statusModal = document.getElementById('statusModal');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const closeStatusBtn = document.getElementById('closeStatusBtn');
+
+        function showStatusModal(type, title, message) {
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+
+            if (type === 'success') {
+                statusIcon.className = 'status-icon success';
+                statusIcon.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+            } else {
+                statusIcon.className = 'status-icon error';
+                statusIcon.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            }
+
+            statusModal.classList.add('active');
+        }
+
+        closeStatusBtn.addEventListener('click', () => {
+            statusModal.classList.remove('active');
+        });
+
         async function verifyCredentials() {
             const usernameInput = document.getElementById("loginUsernameInput").value.trim();
             const pinInput = document.getElementById("loginPinInput").value.trim();
-            const errorMsg = document.getElementById("errorMessage");
             const unlockBtn = document.getElementById("unlockBtn");
 
             if (!usernameInput || !pinInput) {
-                errorMsg.innerText = "Please enter both User Name and Security PIN.";
-                errorMsg.style.display = "block";
+                showStatusModal('error', 'Authentication Error', 'Please enter both User Name and Security PIN.');
                 return;
             }
 
@@ -389,7 +515,6 @@
 
                 // Verify username and PIN against Firebase
                 if (usernameInput.toLowerCase() === dbUser.toLowerCase() && pinInput === dbPin.toString()) {
-                    errorMsg.style.display = "none";
                     document.getElementById("loginSection").classList.add("hidden");
                     document.getElementById("portalSection").classList.remove("hidden");
                     
@@ -403,15 +528,13 @@
                     // Fill user field in settings card
                     document.getElementById("settingsUsernameInput").value = dbUser;
                 } else {
-                    errorMsg.innerText = "Incorrect User Name or Security PIN.";
-                    errorMsg.style.display = "block";
+                    showStatusModal('error', 'Access Denied', 'Incorrect User Name or Security PIN.');
                     document.getElementById("loginPinInput").value = "";
                     document.getElementById("loginPinInput").focus();
                 }
             } catch (err) {
                 console.error("Firebase Read Error:", err);
-                errorMsg.innerText = "Error connecting to Firebase Database.";
-                errorMsg.style.display = "block";
+                showStatusModal('error', 'Database Error', 'Error connecting to Firebase Database.');
             } finally {
                 unlockBtn.disabled = false;
                 unlockBtn.innerText = "Unlock Portal";
@@ -426,22 +549,22 @@
             const updateBtn = document.getElementById("updatePinBtn");
 
             if (!userName) {
-                showStatus("Please enter a User Name.", "error");
+                showStatusModal('error', 'Validation Error', 'Please enter a User Name.');
                 return;
             }
 
             if (!currentPin || !newPin || !confirmPin) {
-                showStatus("Please fill in all PIN fields.", "error");
+                showStatusModal('error', 'Validation Error', 'Please fill in all PIN fields.');
                 return;
             }
 
             if (newPin !== confirmPin) {
-                showStatus("New PINs do not match!", "error");
+                showStatusModal('error', 'Validation Error', 'New PINs do not match!');
                 return;
             }
 
             if (newPin.length < 4) {
-                showStatus("New PIN must be at least 4 digits.", "error");
+                showStatusModal('error', 'Validation Error', 'New PIN must be at least 4 digits.');
                 return;
             }
 
@@ -453,7 +576,7 @@
                 let dbPin = snapshot.val() || DEFAULT_PIN;
 
                 if (currentPin !== dbPin.toString()) {
-                    showStatus("Current PIN is incorrect.", "error");
+                    showStatusModal('error', 'Authentication Error', 'Current PIN is incorrect.');
                 } else {
                     // Update Database
                     await db.ref('adminPin').set(newPin);
@@ -462,25 +585,18 @@
                     // Update UI Header
                     document.getElementById("userBadge").innerText = `👤 Logged in: ${userName}`;
 
-                    showStatus("Credentials successfully updated in database!", "success");
+                    showStatusModal('success', 'Credentials Updated', 'Credentials successfully updated in database!');
                     document.getElementById("currentPinInput").value = "";
                     document.getElementById("newPinInput").value = "";
                     document.getElementById("confirmPinInput").value = "";
                 }
             } catch (err) {
                 console.error("Firebase Write Error:", err);
-                showStatus("Failed to update database.", "error");
+                showStatusModal('error', 'Database Error', 'Failed to update database.');
             } finally {
                 updateBtn.disabled = false;
                 updateBtn.innerText = "Update Credentials in Database";
             }
-        }
-
-        function showStatus(message, type) {
-            const statusMsg = document.getElementById("manageStatusMessage");
-            statusMsg.innerText = message;
-            statusMsg.className = `status-message ${type}`;
-            statusMsg.style.display = "block";
         }
 
         document.getElementById("loginPinInput").addEventListener("keypress", function(e) {

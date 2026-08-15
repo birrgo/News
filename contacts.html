@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Shikela - Admin Control Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="news.css">
+    <style>
+        .page-content-card { 
+            background: #0f172a; 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin-bottom: 25px; 
+            color: #f8fafc; 
+            border: 1px solid #334155; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); 
+            line-height: 1.8;
+        }
+        .admin-section-title { color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; color: #94a3b8; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-control { 
+            width: 100%; 
+            box-sizing: border-box; 
+            background: #1e293b; 
+            border: 1px solid #475569; 
+            border-radius: 12px; 
+            padding: 14px; 
+            color: white; 
+            font-family: inherit; 
+            font-size: 15px; 
+            outline: none; 
+            transition: border 0.2s ease; 
+        }
+        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        textarea.form-control { resize: none; height: 110px; }
+        
+        .admin-btn { 
+            width: 100%; 
+            background: #10b981; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: 5px; 
+            font-family: inherit; 
+            transition: background 0.2s ease; 
+        }
+        .admin-btn:hover { background: #059669; }
+        .admin-btn:disabled { background: #64748b; cursor: not-allowed; }
+        .admin-btn.secondary { background: #3b82f6; margin-top: 15px; }
+        .admin-btn.secondary:hover { background: #2563eb; }
+
+        .status-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+        /* Custom Select Trigger Styles */
+        .select-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .select-trigger .placeholder-text { color: #64748b; }
+
+        /* Custom UI Modal Overlay */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .custom-modal.active { display: flex; }
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalSlide 0.25s ease-out;
+        }
+        @keyframes modalSlide {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-title { font-size: 18px; font-weight: 700; color: #ffffff; margin: 0; }
+        .modal-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .modal-close:hover { color: #ffffff; }
+
+        /* Options list for Category Picker */
+        .options-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .option-item {
+            padding: 14px 16px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-item:hover, .option-item.selected { background: #2563eb; color: #ffffff; border-color: #3b82f6; }
+
+        /* Status Dialog */
+        .status-content { text-align: center; padding: 10px 0; }
+        .status-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
+        .status-icon.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-icon.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .status-message { color: #cbd5e1; font-size: 15px; margin-bottom: 20px; line-height: 1.5; }
+
+        /* User Messages List UI */
+        .messages-list-container { display: flex; flex-direction: column; gap: 14px; margin-top: 15px; }
+        .message-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message-card-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { color: #ffffff; font-weight: 700; font-size: 15px; }
+        .user-email { color: #3b82f6; font-size: 13px; text-decoration: none; word-break: break-all; }
+        .message-subject-badge { background: #334155; color: #38bdf8; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; text-transform: capitalize; }
+        .message-body { background: #0f172a; padding: 12px; border-radius: 8px; color: #cbd5e1; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; border: 1px solid #1e293b; }
+        .message-footer { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; }
+        .delete-msg-btn { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s ease; }
+        .delete-msg-btn:hover { background: #ef4444; color: #ffffff; }
+        .no-messages { text-align: center; color: #64748b; font-size: 14px; padding: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="app-view">
+        <header class="nav-header" style="background: #081B38;">
+            <div class="header-left-group">
+                <a href="index.html" style="color: white; margin-right: 15px; display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </a>
+                <h1 class="header-title-text" style="font-size: 18px;">Shikela Admin Console</h1>
+            </div>
+        </header>
+
+        <main class="app-content" style="padding-top: 80px;">
+            
+            <!-- 1. Manage Social Links & Contact Info -->
+            <div class="page-content-card">
+                <div class="admin-section-title">
+                    <span>Manage Support Links</span>
+                    <span class="status-badge">Live Sync</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 13.5px; margin-bottom: 20px;">Update the links displayed on your Contact Us page and user interface.</p>
+
+                <form id="socialLinksForm">
+                    <div class="input-group">
+                        <label for="adminTelegram">Telegram Channel / Group Link</label>
+                        <input type="url" id="adminTelegram" class="form-control" placeholder="https://t.me/..." required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="adminInstagram">Instagram Profile Link</label>
+                        <input type="url" id="adminInstagram" class="form-control" placeholder="https://instagram.com/..." required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="adminGmail">Support Gmail Address</label>
+                        <input type="email" id="adminGmail" class="form-control" placeholder="support@..." required>
+                    </div>
+
+                    <button type="submit" id="saveLinksBtn" class="admin-btn">Save Contact Links</button>
+                </form>
+            </div>
+
+            <!-- 2. Post Daily Content -->
+            <div class="page-content-card">
+                <div class="admin-section-title">
+                    <span>Publish Daily Post</span>
+                    <span class="status-badge">Matrix Online</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 13.5px; margin-bottom: 20px;">Create your daily post targeting Africa/Ethiopia jobs, business tips, or tech advice.</p>
+
+                <form id="dailyPostForm">
+                    <div class="input-group">
+                        <label>Select Category / Pillar</label>
+                        <div id="categoryTrigger" class="form-control select-trigger">
+                            <span id="selectedCategoryText" class="placeholder-text">Select post category...</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <input type="hidden" id="postCategory" name="postCategory" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="postTitle">Post Headline / Title</label>
+                        <input type="text" id="postTitle" class="form-control" placeholder="e.g. Remote Data Entry Opportunity for East Africa" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="postCode">Post Unique Code (For Search Bar)</label>
+                        <input type="text" id="postCode" class="form-control" placeholder="e.g. SKL-2026-001" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="postContent">Full Post Content & External Application Link</label>
+                        <textarea id="postContent" class="form-control" placeholder="Write full instructions, requirements, and links here..." required></textarea>
+                    </div>
+
+                    <button type="submit" id="publishBtn" class="admin-btn secondary">Publish Post to Database</button>
+                </form>
+            </div>
+
+            <!-- 3. Read User Submitted Messages -->
+            <div class="page-content-card">
+                <div class="admin-section-title">
+                    <span>Received Support Messages</span>
+                    <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;" id="messagesCount">0 Messages</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 13.5px; margin-bottom: 15px;">Read and clear inquiries submitted by users through the contact support page.</p>
+
+                <div id="messagesList" class="messages-list-container">
+                    <div class="no-messages">Loading messages...</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Category Picker Modal -->
+    <div id="categoryModal" class="custom-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Select Post Category</h3>
+                <button type="button" class="modal-close" id="closeCategoryModal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="options-list">
+                <div class="option-item" data-value="Online Update">Online Update (Work Vacancies)</div>
+                <div class="option-item" data-value="Online Tips">Online Tips</div>
+                <div class="option-item" data-value="Shikela Update">Shikela Update</div>
+                <div class="option-item" data-value="Shikela Tips">Shikela Tips</div>
+                <div class="option-item" data-value="Tech Update">Tech Update</div>
+                <div class="option-item" data-value="Tech Tips">Tech Tips</div>
+                <div class="option-item" data-value="Social Media">Social Media</div>
+                <div class="option-item" data-value="Entertainment">Entertainment</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Alert Modal -->
+    <div id="statusModal" class="custom-modal">
+        <div class="modal-card">
+            <div class="status-content">
+                <div id="statusIcon" class="status-icon"></div>
+                <h3 id="statusTitle" class="modal-title" style="margin-bottom: 8px;">Notification</h3>
+                <div id="statusMessage" class="status-message"></div>
+                <button type="button" id="closeStatusBtn" class="admin-btn" style="margin-top: 0;">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, push, child, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqwgwiukwKb7o6gwnaLoPQSWc7BfMDuYQ",
+            authDomain: "besuad.firebaseapp.com",
+            databaseURL: "https://besuad-default-rtdb.firebaseio.com",
+            projectId: "besuad",
+            storageBucket: "besuad.firebasestorage.app",
+            messagingSenderId: "641705823615",
+            appId: "1:641705823615:web:6502b2511ff8c0f251de4a",
+            measurementId: "G-2YSX71N08Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Status Modal Trigger
+        const statusModal = document.getElementById('statusModal');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const closeStatusBtn = document.getElementById('closeStatusBtn');
+
+        function showStatusModal(type, title, message) {
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+
+            if (type === 'success') {
+                statusIcon.className = 'status-icon success';
+                statusIcon.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+            } else {
+                statusIcon.className = 'status-icon error';
+                statusIcon.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            }
+
+            statusModal.classList.add('active');
+        }
+
+        closeStatusBtn.addEventListener('click', () => {
+            statusModal.classList.remove('active');
+        });
+
+        // Category Modal Picker Interactivity
+        const categoryTrigger = document.getElementById('categoryTrigger');
+        const categoryModal = document.getElementById('categoryModal');
+        const closeCategoryModal = document.getElementById('closeCategoryModal');
+        const selectedCategoryText = document.getElementById('selectedCategoryText');
+        const hiddenCategoryInput = document.getElementById('postCategory');
+        const optionItems = document.querySelectorAll('.option-item');
+
+        categoryTrigger.addEventListener('click', () => {
+            categoryModal.classList.add('active');
+        });
+
+        closeCategoryModal.addEventListener('click', () => {
+            categoryModal.classList.remove('active');
+        });
+
+        optionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.getAttribute('data-value');
+                const text = item.textContent;
+
+                hiddenCategoryInput.value = value;
+                selectedCategoryText.textContent = text;
+                selectedCategoryText.classList.remove('placeholder-text');
+                selectedCategoryText.style.color = '#ffffff';
+
+                optionItems.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+
+                categoryModal.classList.remove('active');
+            });
+        });
+
+        // Load existing Social Links
+        const dbRef = ref(database);
+        get(child(dbRef, 'social_links')).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (data.telegram) document.getElementById('adminTelegram').value = data.telegram;
+                if (data.instagram) document.getElementById('adminInstagram').value = data.instagram;
+                if (data.email) document.getElementById('adminGmail').value = data.email;
+            }
+        }).catch((error) => {
+            console.error("Error loading links:", error);
+        });
+
+        // 1. Update Social Links
+        const socialLinksForm = document.getElementById('socialLinksForm');
+        const saveLinksBtn = document.getElementById('saveLinksBtn');
+
+        socialLinksForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            saveLinksBtn.disabled = true;
+            saveLinksBtn.textContent = 'Updating...';
+
+            const telegram = document.getElementById('adminTelegram').value;
+            const instagram = document.getElementById('adminInstagram').value;
+            const email = document.getElementById('adminGmail').value;
+
+            try {
+                await set(ref(database, 'social_links'), {
+                    telegram: telegram,
+                    instagram: instagram,
+                    email: email
+                });
+                showStatusModal('success', 'Links Saved', 'Social contact links updated successfully!');
+            } catch (error) {
+                console.error("Error updating links:", error);
+                showStatusModal('error', 'Update Failed', 'Failed to update links: ' + error.message);
+            } finally {
+                saveLinksBtn.disabled = false;
+                saveLinksBtn.textContent = 'Save Contact Links';
+            }
+        });
+
+        // 2. Publish Daily Post
+        const dailyPostForm = document.getElementById('dailyPostForm');
+        const publishBtn = document.getElementById('publishBtn');
+
+        dailyPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!hiddenCategoryInput.value) {
+                showStatusModal('error', 'Required Field', 'Please select a post category before publishing.');
+                return;
+            }
+
+            publishBtn.disabled = true;
+            publishBtn.textContent = 'Publishing...';
+
+            const category = hiddenCategoryInput.value;
+            const title = document.getElementById('postTitle').value;
+            const code = document.getElementById('postCode').value;
+            const content = document.getElementById('postContent').value;
+            
+            const now = Date.now();
+            const dateStr = new Date().toISOString().split('T')[0];
+
+            try {
+                const newPostRef = push(ref(database, 'shikelaNews'));
+                await set(newPostRef, {
+                    category: category,
+                    title: title,
+                    newsTitle: title,
+                    code: code,
+                    newsCode: code,
+                    content: content,
+                    timestamp: now,
+                    updatedAt: now,
+                    createdAtTimestamp: now,
+                    date: dateStr
+                });
+
+                showStatusModal('success', 'Post Published', 'Daily post published successfully to shikelaNews!');
+                dailyPostForm.reset();
+                selectedCategoryText.textContent = 'Select post category...';
+                selectedCategoryText.classList.add('placeholder-text');
+                hiddenCategoryInput.value = '';
+                optionItems.forEach(i => i.classList.remove('selected'));
+            } catch (error) {
+                console.error("Error publishing post:", error);
+                showStatusModal('error', 'Publish Failed', 'Failed to publish post: ' + error.message);
+            } finally {
+                publishBtn.disabled = false;
+                publishBtn.textContent = 'Publish Post to Database';
+            }
+        });
+
+        // 3. Realtime Listener for User Submitted Messages
+        const messagesRef = ref(database, 'messages');
+        const messagesList = document.getElementById('messagesList');
+        const messagesCount = document.getElementById('messagesCount');
+
+        onValue(messagesRef, (snapshot) => {
+            messagesList.innerHTML = '';
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const entries = Object.entries(data);
+                
+                messagesCount.textContent = `${entries.length} Message${entries.length > 1 ? 's' : ''}`;
+                
+                // Sort by timestamp descending (newest first)
+                entries.sort((a, b) => new Date(b[1].timestamp || 0) - new Date(a[1].timestamp || 0));
+
+                entries.forEach(([key, msg]) => {
+                    const card = document.createElement('div');
+                    card.className = 'message-card';
+                    
+                    const formattedDate = msg.timestamp 
+                        ? new Date(msg.timestamp).toLocaleString() 
+                        : 'Unknown Date';
+
+                    card.innerHTML = `
+                        <div class="message-card-header">
+                            <div class="user-info">
+                                <span class="user-name">${escapeHtml(msg.name || 'Anonymous User')}</span>
+                                <a href="mailto:${escapeHtml(msg.email || '')}" class="user-email">${escapeHtml(msg.email || 'No email provided')}</a>
+                            </div>
+                            <span class="message-subject-badge">${escapeHtml(msg.subject || 'General')}</span>
+                        </div>
+                        <div class="message-body">${escapeHtml(msg.message || '')}</div>
+                        <div class="message-footer">
+                            <span>Sent: ${formattedDate}</span>
+                            <button class="delete-msg-btn" data-id="${key}">Delete</button>
+                        </div>
+                    `;
+
+                    messagesList.appendChild(card);
+                });
+
+                // Delete Button Handlers
+                document.querySelectorAll('.delete-msg-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const msgId = e.target.getAttribute('data-id');
+                        try {
+                            await remove(ref(database, `messages/${msgId}`));
+                            showStatusModal('success', 'Message Removed', 'The selected message has been deleted.');
+                        } catch (err) {
+                            showStatusModal('error', 'Delete Failed', 'Could not remove message: ' + err.message);
+                        }
+                    });
+                });
+
+            } else {
+                messagesCount.textContent = '0 Messages';
+                messagesList.innerHTML = '<div class="no-messages">No user messages found in database.</div>';
+            }
+        }, (error) => {
+            console.error("Error reading messages:", error);
+            messagesList.innerHTML = `<div class="no-messages" style="color: #ef4444;">Error loading messages: ${error.message}</div>`;
+        });
+
+        // Helper to prevent XSS
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

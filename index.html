@@ -3,64 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- Primary Meta Tags -->
-    <title>Shiqela | Online Work in Ethiopia, Tech Tips & Vacancies</title>
-    <meta name="title" content="Shiqela | Online Work in Ethiopia, Tech Tips & Vacancies">
-    <meta name="description" content="Shiqela is your primary platform for online work in Ethiopia, tech tips, digital skills, remote work strategies, and the latest online vacancy updates.">
-    <meta name="keywords" content="shiqela, shikela, online work in ethiopia, tech tips, online vacancy, remote jobs ethiopia, work from home ethiopia, ethiopian tech, digital skills, online jobs ethiopia">
-    <meta name="author" content="Shiqela">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://shiqela.online/">
-
-    <!-- Theme & App Manifest -->
-    <meta name="theme-color" content="#0a192f">
-    <link rel="manifest" href="https://shiqela.online/manifest.json">
-
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://shiqela.online/s.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://shiqela.online/s.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://shiqela.online/s.png">
-
-    <!-- Open Graph / Facebook / Telegram / LinkedIn -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://shiqela.online/">
-    <meta property="og:title" content="Shiqela | Online Work in Ethiopia & Tech Tips">
-    <meta property="og:description" content="Discover verified online work in Ethiopia, remote vacancy updates, and actionable tech tips on Shiqela.">
-    <meta property="og:image" content="https://shiqela.online/s.png">
-
-    <!-- Twitter Card -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://shiqela.online/">
-    <meta property="twitter:title" content="Shiqela | Online Work in Ethiopia & Tech Tips">
-    <meta property="twitter:description" content="Discover verified online work in Ethiopia, remote vacancy updates, and actionable tech tips on Shiqela.">
-    <meta property="twitter:image" content="https://shiqela.online/s.png">
-
-    <!-- Structured Data / JSON-LD (Google Rich Snippets) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Shiqela",
-      "alternateName": ["Shiqela App", "Shiqela Tech", "Shikela"],
-      "url": "https://shiqela.online/",
-      "description": "Shiqela provides verified online jobs in Ethiopia, remote work strategies, tech tips, and vacancy updates.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Shiqela",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://shiqela.online/s.png"
-        }
-      }
-    }
-    </script>
-
-    <!-- Preconnect & Fonts -->
+    <title>Shikela - Home & Latest Index</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="news.css">
+    <style>
+        /* Sidebar iframe drawer overlay setup */
+        .menu-iframe-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .menu-iframe-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Half width, 100% full height iframe container */
+        .menu-iframe-drawer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            border: none;
+            background: #081B38;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-iframe-overlay.active .menu-iframe-drawer {
+            transform: translateX(0);
+        }
+    </style>
 </head>
 <body>
 
@@ -74,6 +59,11 @@
                 </linearGradient>
             </defs>
         </svg>
+
+        <!-- Half Width, Full Height Menu Drawer with Iframe -->
+        <div class="menu-iframe-overlay" id="menuIframeOverlay">
+            <iframe class="menu-iframe-drawer" id="menuIframe" src="about:blank"></iframe>
+        </div>
 
         <div class="custom-popup-overlay" id="customPopupModule">
             <div class="custom-popup-modal">
@@ -109,33 +99,47 @@
             </div>
         </div>
 
-        <header class="nav-header">
-            <div class="header-left-group">
-                <h1 class="header-title-text">What's new?</h1>
+        <header class="nav-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <!-- Left: 3-line Menu Button -->
+            <div class="header-left-group" style="display: flex; align-items: center;">
+                <button type="button" class="menu-action-btn" id="openMenuIframeBtn" aria-label="Open Menu" style="background: none; border: none; cursor: pointer; color: inherit; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
             </div>
-            
-            <div class="header-live-clock-badge" id="topCornerLiveClock">00:00:00 AM</div>
 
-            <button class="search-action-btn" id="openSearchBtn" aria-label="Search News">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </button>
+            <!-- Center: Title -->
+            <div class="header-center-group" style="flex: 1; text-align: center;">
+                <h1 class="header-title-text" style="margin: 0; text-align: center;">What's new?</h1>
+            </div>
+
+            <!-- Right: Live Clock & Search -->
+            <div class="header-right-group" style="display: flex; align-items: center; gap: 8px;">
+                <div class="header-live-clock-badge" id="topCornerLiveClock">00:00:00 AM</div>
+                <button class="search-action-btn" id="openSearchBtn" aria-label="Search News">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
         </header>
 
         <main class="app-content">
-            <!-- Two-Choice Top Menu with Shiqela Update and Shiqela Tips -->
+            <!-- Two-Choice Top Menu with Shikela Update and Shikela Tips -->
             <div class="category-filter-row filter-btn-grid" id="filterPillsRow">
-                <button class="filter-pill filter-btn active-pill active" data-filter="Shiqela Update" data-category="Shiqela Update">Shiqela Update</button>
-                <button class="filter-pill filter-btn" data-filter="Shiqela Tips" data-category="Shiqela Tips">Shiqela Tips</button>
+                <button class="filter-pill filter-btn active-pill active" data-filter="Shikela Update" data-category="Shikela Update">Shikela Update</button>
+                <button class="filter-pill filter-btn" data-filter="Shikela Tips" data-category="Shikela Tips">Shikela Tips</button>
             </div>
 
             <div class="broadcasts-container" id="broadcastsContainer">
                 <div class="featured-broadcast-card">
-                    <h2 class="broadcast-title" style="font-size:14px; text-align:center; color: var(--text-muted, #94a3b8);">Connecting to Secure Node...</h2>
+                    <h2 class="broadcast-title" style="font-size:14px; text-align:center; color: var(--text-muted);">Connecting to Secure Node...</h2>
                 </div>
             </div>
 
             <footer class="verified-footer-shield">
-                <span class="footer-shield-text">Shiqela Secure Matrix Verified</span>
+                <span class="footer-shield-text">Shikela Secure Matrix Verified</span>
             </footer>
         </main>
 
@@ -175,23 +179,24 @@
         </nav>
     </div>
 
-    <!-- PWA Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('/sw.js')
-            .then((reg) => {
-              console.log('Shiqela Service Worker active on scope:', reg.scope);
-            })
-            .catch((err) => {
-              console.error('Shiqela Service Worker registration error:', err);
-            });
-        });
-      }
-    </script>
-
-    <!-- Main JavaScript Logic -->
     <script type="module" src="index.js"></script>
+
+    <!-- Script to manage iframe drawer toggling -->
+    <script>
+        const openBtn = document.getElementById('openMenuIframeBtn');
+        const overlay = document.getElementById('menuIframeOverlay');
+        const iframe = document.getElementById('menuIframe');
+
+        openBtn.addEventListener('click', () => {
+            iframe.src = 'menu.html';
+            overlay.classList.add('active');
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
